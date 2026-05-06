@@ -1,0 +1,7 @@
+{
+  "name": "calyst/admissions",
+  "description": "Admissions form processing dependencies",
+  "require": {
+    "phpmailer/phpmailer": "^7.0"
+  }
+}

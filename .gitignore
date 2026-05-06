@@ -1,0 +1,17 @@
+# Large media archives
+/ASSETS/images/ccs pics/
+
+# Third-party/dependency directories
+/ASSETS/fonts/fontawesome/
+/vendor/
+
+# Uploaded files
+/uploads/admissions/
+
+# Local environment files
+.env
+.env.*
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
