@@ -1,0 +1,3 @@
+ALTER TABLE news_events ADD COLUMN IF NOT EXISTS featured_image_alt VARCHAR(255) NULL AFTER featured_image;
+ALTER TABLE staff ADD COLUMN IF NOT EXISTS photo_alt VARCHAR(255) NULL AFTER photo_url;
+ALTER TABLE gallery ADD COLUMN IF NOT EXISTS image_alt VARCHAR(255) NULL AFTER image_url;

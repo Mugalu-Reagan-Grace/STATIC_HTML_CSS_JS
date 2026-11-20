@@ -1,8 +1,4 @@
-# Large media archives
-/ASSETS/images/ccs pics/
-
 # Third-party/dependency directories
-/ASSETS/fonts/fontawesome/
 /vendor/
 
 # Uploaded files
@@ -11,6 +7,7 @@
 # Local environment files
 .env
 .env.*
+!.env.example
 
 # OS/editor noise
 .DS_Store

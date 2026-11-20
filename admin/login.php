@@ -3,12 +3,25 @@ require_once __DIR__ . '/config.php';
 
 $error = '';
 $success = '';
+$username = '';
+
+$success = '';
+if (isset($_GET['reset'])) {
+    $success = 'Your password has been updated. Sign in with your new password.';
+} elseif (isset($_GET['created'])) {
+    $success = 'Your email is verified and your CMS account is ready. Sign in to continue.';
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = sanitizeInput($_POST['username'] ?? '');
-    $password = $_POST['password'] ?? '';
+    $usernameInput = $_POST['username'] ?? '';
+    $passwordInput = $_POST['password'] ?? '';
+    $username = is_string($usernameInput) ? trim($usernameInput) : '';
+    $password = is_string($passwordInput) ? $passwordInput : '';
     
-    if (empty($username) || empty($password)) {
+    if (!isValidCsrfToken($_POST['csrf_token'] ?? null)) {
+        http_response_code(400);
+        $error = 'Your session expired. Refresh the page and try again.';
+    } elseif (empty($username) || empty($password)) {
         $error = 'Username and password are required';
     } else {
         $stmt = $conn->prepare('SELECT id, username, password_hash, full_name, role FROM admins WHERE username = ? AND is_active = TRUE');
@@ -19,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows === 1) {
             $admin = $result->fetch_assoc();
             if (password_verify($password, $admin['password_hash'])) {
+                session_regenerate_id(true);
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_username'] = $admin['username'];
                 $_SESSION['admin_name'] = $admin['full_name'];
@@ -45,163 +59,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1e3a8a">
     <title>Admin Login - Calyst Christian School</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .login-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            width: 100%;
-            max-width: 400px;
-            padding: 40px;
-        }
-        
-        .login-header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .login-header h1 {
-            color: #333;
-            font-size: 28px;
-            margin-bottom: 5px;
-        }
-        
-        .login-header p {
-            color: #666;
-            font-size: 14px;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-        
-        .form-group input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .alert {
-            padding: 12px 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        
-        .alert-error {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
-        }
-        
-        .alert-success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        
-        .login-btn:hover {
-            transform: translateY(-2px);
-        }
-        
-        .login-btn:active {
-            transform: translateY(0);
-        }
-        
-        .demo-credentials {
-            background: #f0f4ff;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            font-size: 12px;
-            color: #666;
-            border-left: 4px solid #667eea;
-        }
-        
-        .demo-credentials strong {
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
-        }
-    </style>
+    <link rel="icon" type="image/x-icon" href="../ASSETS/images/favicon_io no bg/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="../ASSETS/images/favicon_io no bg/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="../ASSETS/images/favicon_io no bg/apple-touch-icon.png">
+    <link rel="stylesheet" href="./admin-auth.css?v=2">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>Admin Portal</h1>
+    <main class="auth-card">
+        <header class="auth-brand">
+            <img src="../ASSETS/images/calyst budge better no bg.png" alt="">
+            <h1>Admin portal</h1>
             <p>Calyst Christian School</p>
-        </div>
+        </header>
         
         <?php if ($error): ?>
-            <div class="alert alert-error"><?= $error; ?></div>
+            <div class="auth-alert error" role="alert" aria-live="polite"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php endif; ?>
+        <?php if ($success): ?>
+            <div class="auth-alert success" role="status" aria-live="polite"><?= htmlspecialchars($success, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
         
-        <form method="POST">
-            <div class="form-group">
+        <form method="POST" action="./login.php">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrfToken(), ENT_QUOTES, 'UTF-8'); ?>">
+            <div class="auth-field">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autofocus>
+                <input type="text" id="username" name="username" value="<?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8'); ?>" autocomplete="username" required autofocus>
             </div>
             
-            <div class="form-group">
+            <div class="auth-field">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <div class="auth-password">
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                    <button class="auth-password-toggle" type="button" aria-label="Show password" aria-pressed="false" data-password-toggle>Show</button>
+                </div>
             </div>
             
-            <button type="submit" class="login-btn">Login</button>
+            <button type="submit" class="auth-submit">Sign in</button>
         </form>
-        
-        <div class="demo-credentials">
-            <strong>Demo Credentials:</strong>
-            Username: <code>admin</code><br>
-            Password: <code>admin123</code>
-        </div>
-    </div>
+        <nav class="auth-links" aria-label="Account help">
+            <a href="./forgot-password.php">Forgot your password?</a>
+            <a href="../home.php">Return to school website</a>
+        </nav>
+    </main>
+    <script>
+        const passwordInput = document.getElementById("password");
+        const passwordToggle = document.querySelector("[data-password-toggle]");
+        passwordToggle.addEventListener("click", () => {
+            const showPassword = passwordInput.type === "password";
+            passwordInput.type = showPassword ? "text" : "password";
+            passwordToggle.textContent = showPassword ? "Hide" : "Show";
+            passwordToggle.setAttribute("aria-label", showPassword ? "Hide password" : "Show password");
+            passwordToggle.setAttribute("aria-pressed", String(showPassword));
+        });
+    </script>
 </body>
 </html>

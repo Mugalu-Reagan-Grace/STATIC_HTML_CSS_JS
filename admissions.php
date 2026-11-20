@@ -1,4 +1,7 @@
-<?php require_once __DIR__ . '/brand.php'; ?>
+<?php
+require_once __DIR__ . '/brand.php';
+require_once __DIR__ . '/components/managed-content.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,46 +11,33 @@
     <link
       rel="icon"
       type="image/x-icon"
-      href="./ASSETS/IMAGES/favicon_io no bg/favicon.ico"
+      href="./ASSETS/images/favicon_io no bg/favicon.ico"
     />
-    <link rel="stylesheet" href="calyst.css" />
-    <link rel="stylesheet" href="./ASSETS/js/animations.css" />
+    <link rel="stylesheet" href="./ASSETS/css/calyst.css?v=4" />
+    <link rel="stylesheet" href="./ASSETS/css/animations.css" />
   </head>
-  <body style="background: linear-gradient(135deg, var(--primary-blue), var(--dark-blue));">
+  <body>
     <!-- Header -->
     <?php include_once 'components/header.php'; ?>
 
-    <section class="section photo-showcase">
+    <main id="main-content">
+    <section class="page-hero">
       <div class="container">
-        <div class="section-title">
-          <h2>Start Your Calyst Journey</h2>
-          <p>A welcoming community where every child is known and nurtured.</p>
-        </div>
-        <div class="photo-strip">
-          <figure class="photo-item">
-            <img
-              src="./ASSETS/images/ccs pics/BACK 2 SCH PICS 2024/AMUG4236.jpg"
-              alt="Students excited to start their learning journey"
-              loading="lazy"
-            />
-            <figcaption class="photo-caption">Ready to Learn</figcaption>
-          </figure>
-          <figure class="photo-item">
-            <img
-              src="./ASSETS/images/ccs pics/Calyst Career day 2025/AMUG0042.JPG"
-              alt="Students exploring professional opportunities"
-              loading="lazy"
-            />
-            <figcaption class="photo-caption">Future Pathways</figcaption>
-          </figure>
-          <figure class="photo-item">
-            <img
-              src="./ASSETS/images/ccs pics/Graduation pics 2024/AMUG9577.JPG"
-              alt="Proud graduates at commencement ceremony"
-              loading="lazy"
-            />
-            <figcaption class="photo-caption">Success Stories</figcaption>
-          </figure>
+        <span class="eyebrow">Admissions</span>
+        <h1>Child Registration</h1>
+        <p>Review the information requested before starting an application. If you have questions, contact the school office first.</p>
+      </div>
+    </section>
+
+    <?php renderManagedContentForCurrentPage(); ?>
+
+    <section class="section admissions-guidance">
+      <div class="container">
+        <div class="admissions-guidance-card">
+          <h2>Before you apply</h2>
+          <p>The form asks for child and parent or guardian details, including a guardian NIN, contact details, and residential address. A birth-certificate document is optional.</p>
+          <p>This is personal information about a child. Submit it only if you are the parent or legal guardian and are ready to apply. Please do not include detailed medical information in the optional notes.</p>
+          <p>For help before sharing application information, contact the <a href="./contact_us.php">school office</a>. See the <a href="./privacy-policy.php">Privacy Policy</a> for information about how submitted details are handled.</p>
         </div>
       </div>
     </section>
@@ -70,9 +60,9 @@
               <h1><?= SCHOOL_NAME_UPPER ?></h1>
               <p class="school-motto"><?= SCHOOL_MOTTO ?></p>
               <div class="letterhead-contact">
-                <span><i class="fa-solid fa-map-marker-alt"></i> P.O.BOX 124666, Kampala, Uganda</span>
-                <span><i class="fa-solid fa-phone"></i> (+256) 774-744-394 | (+256) 752-482-066</span>
-                <span><i class="fa-solid fa-envelope"></i> mugalureagan18@gmail.com</span>
+                <span><i class="fa-solid fa-map-marker-alt"></i> <?= htmlspecialchars($school['address'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span><i class="fa-solid fa-phone"></i> <?= htmlspecialchars($school['phone_1'], ENT_QUOTES, 'UTF-8') ?><?= !empty($school['phone_2']) ? ' | ' . htmlspecialchars($school['phone_2'], ENT_QUOTES, 'UTF-8') : '' ?></span>
+                <span><i class="fa-solid fa-envelope"></i> <?= htmlspecialchars($school['email'], ENT_QUOTES, 'UTF-8') ?></span>
               </div>
             </div>
           </div>
@@ -134,9 +124,10 @@
                   required
                 />
               </div>
+            </div>
             <div class="form-row">
               <div class="form-group">
-                <label for="parent-nin">NIN</label>
+                <label for="parent-nin">Parent / Guardian NIN</label>
                 <input
                   type="text"
                   id="parent-nin"
@@ -189,13 +180,13 @@
             <h2>Additional Information</h2>
             <div class="form-group">
               <label for="special-needs"
-                >Does your child have any special needs or requirements?</label
+                >Is there anything the admissions team should know to support your child? (Optional)</label
               >
               <textarea
                 id="special-needs"
                 name="special_needs"
                 rows="4"
-                placeholder="Please describe any special needs, allergies, medical conditions, or other important information"
+                placeholder="Share only information relevant to this application. Please do not include detailed medical information."
               ></textarea>
             </div>
 
@@ -226,13 +217,15 @@
       <!-- CTA BANNER -->
   <section class="cta-banner" id="tour">
     <div class="container">
-      <h2>Have Questions? Schedule a Personalized Tour Today!</h2>
+    <h2>Questions about applying?</h2>
       <div class="cta-links">
-        <a href="tel:(+256) 752-482-066">Call Us: <p>(+256) 774-744-394</p><p>(+256) 752-482-066</p></a> |
+      <a href="tel:+256774744394">Call +256 774-744-394</a>
+      <a href="tel:+256752482066">Call +256 752-482-066</a>
         <a href="mailto:mugalureagan18@gmail.com">Email Us</a>
       </div>
     </div>
   </section>
+  </main>
 
     <!-- Footer -->
     <?php include_once 'components/footer.php'; ?>
@@ -336,14 +329,11 @@
       });
     }
   </script>
-  <script src="./ASSETS/fonts/fontawesome/js/solid.js"></script>
-  <script src="./ASSETS/fonts/fontawesome/js/fontawesome.js"></script>
   <script src="./ASSETS/js/utils.js"></script>
-  <script src="./config.js"></script>
-  <script src="./ASSETS/js/main.js"></script>
+  <script src="./ASSETS/js/config.js?v=7"></script>
+  <script src="./ASSETS/js/main.js?v=6"></script>
   </body>
 </html>
-
 
 
 

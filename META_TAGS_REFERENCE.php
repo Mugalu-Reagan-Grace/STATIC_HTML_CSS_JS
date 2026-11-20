@@ -13,9 +13,9 @@ Copy and customize these meta tags for each page
 <meta name="theme-color" content="#1e3a8a" />
 
 <!-- FAVICON -->
-<link rel="icon" type="image/x-icon" href="./ASSETS/IMAGES/favicon_io no bg/favicon.ico" />
-<link rel="apple-touch-icon" href="./ASSETS/IMAGES/favicon_io no bg/apple-touch-icon.png" />
-<link rel="manifest" href="./manifest.json" />
+<link rel="icon" type="image/x-icon" href="./ASSETS/images/favicon_io no bg/favicon.ico" />
+<link rel="apple-touch-icon" href="./ASSETS/images/favicon_io no bg/apple-touch-icon.png" />
+<link rel="manifest" href="./ASSETS/images/favicon_io no bg/site.webmanifest" />
 
 <!-- OPEN GRAPH - SOCIAL SHARING -->
 <meta property="og:type" content="website" />
@@ -81,7 +81,7 @@ Copy and customize these meta tags for each page
 <link rel="dns-prefetch" href="https://cdn.example.com" />
 
 <!-- PERFORMANCE HINTS -->
-<link rel="prefetch" href="./calyst.css" />
+<link rel="prefetch" href="./ASSETS/css/calyst.css" />
 <link rel="prefetch" href="./ASSETS/js/main.js" />
 
 <!-- ROBOTS META -->
@@ -111,6 +111,5 @@ IMPORTANT ENDPOINTS TO UPDATE:
 - Update social media URLs
 - Verify all image paths are correct
 -->
-
 
 

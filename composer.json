@@ -2,6 +2,7 @@
   "name": "calyst/admissions",
   "description": "Admissions form processing dependencies",
   "require": {
-    "phpmailer/phpmailer": "^7.0"
+    "phpmailer/phpmailer": "^7.0",
+    "vlucas/phpdotenv": "^5.6"
   }
 }

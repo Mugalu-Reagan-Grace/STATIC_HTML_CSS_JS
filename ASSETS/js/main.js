@@ -58,19 +58,11 @@ function applyDynamicSiteIdentity() {
   if (!config) return;
 
   const brandName = config.brand?.displayName || config.site?.name;
-  const brandMotto = config.brand?.motto;
 
   // Footer school title
   const footerTitle = document.querySelector("footer .footer-content > .footer-column h3");
   if (footerTitle && brandName) {
     footerTitle.textContent = brandName;
-  }
-
-  // Footer intro line (only if it already references the school/motto)
-  const footerIntro = footerTitle?.parentElement?.querySelector("p");
-  if (footerIntro && brandMotto && /HOFU YA BWANA|Christian School|Christ-centered/i.test(footerIntro.textContent)) {
-    const foundedYear = config.school?.founded || "1995";
-    footerIntro.textContent = `Providing Christ-centered education since ${foundedYear}. ${brandMotto} - a commitment to academic excellence, character development, and faith.`;
   }
 
   // Selected dynamic metadata
@@ -92,17 +84,18 @@ function applyDynamicSiteIdentity() {
 const DEFAULT_NAVIGATION = [
   { label: "Home", url: "./home.php" },
   {
-    label: "About",
+    label: "School",
     url: "./about.php",
     children: [
+      { label: "About", url: "./about.php" },
       { label: "Staff", url: "./staff.php" },
       { label: "Fees", url: "./fees.php" },
+      { label: "Gallery", url: "./gallery.php" },
     ],
   },
-  { label: "Gallery", url: "./gallery.php" },
   { label: "Programs", url: "./programs.php" },
-  { label: "Contact", url: "./contact_us.php" },
   { label: "News & Events", url: "./news-events.php" },
+  { label: "Contact", url: "./contact_us.php" },
   {
     label: "Admissions",
     url: "./admissions.php",
@@ -143,6 +136,9 @@ function buildNavItemMarkup(item, currentPageName) {
   if (isCurrent || hasActiveChild) linkClasses.push("active");
 
   const ariaCurrent = isCurrent ? ' aria-current="page"' : "";
+  const dropdownClick = hasChildren
+    ? ' onclick="if (globalThis.innerWidth <= 767) { event.preventDefault(); this.parentElement.classList.toggle(\'active\'); }"'
+    : "";
   const classAttr = itemClasses.length
     ? ` class="${itemClasses.join(" ")}"`
     : "";
@@ -164,7 +160,7 @@ function buildNavItemMarkup(item, currentPageName) {
     })
     .join("");
 
-  return `<li${classAttr}><a href="${item.url}"${linkClassAttr}${ariaCurrent}>${item.label}</a><ul class="dropdown-menu">${childMarkup}</ul></li>`;
+  return `<li${classAttr}><a href="${item.url}"${linkClassAttr}${ariaCurrent}${dropdownClick}>${item.label}</a><ul class="dropdown-menu">${childMarkup}</ul></li>`;
 }
 
 function applyDynamicNavbar() {
@@ -183,13 +179,13 @@ function applyDynamicNavbar() {
     .join("");
 
   const mobileMarkup = [
-    '<li class="close-sidebar"><button type="button" class="sidebar-close" aria-label="Close menu"><i class="fa-solid fa-x" aria-hidden="true"></i></button></li>',
+    '<li class="close-sidebar"><button type="button" class="sidebar-close" aria-label="Close menu" onclick="hideSidebar()"><i class="fa-solid fa-x" aria-hidden="true"></i></button></li>',
     ...navigationItems.map((item) => buildNavItemMarkup(item, currentPageName)),
   ].join("");
 
   document.querySelectorAll(".navbar .nav-links").forEach((navList) => {
     const menuToggleMarkup = hasSidebar
-      ? '<li class="open-sidebar"><button type="button" class="menu-toggle" aria-label="Open main menu" aria-controls="mobile-sidebar" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i><span class="menu-toggle-label">Menu</span></button></li>'
+      ? '<li class="open-sidebar"><button type="button" class="menu-toggle" aria-label="Open main menu" aria-controls="mobile-sidebar" aria-expanded="false" onclick="showSidebar()"><i class="fa-solid fa-bars" aria-hidden="true"></i><span class="menu-toggle-label">Menu</span></button></li>'
       : "";
     navList.innerHTML = `${desktopMarkup}${menuToggleMarkup}`;
   });
@@ -199,11 +195,17 @@ function applyDynamicNavbar() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+function initializeSiteIdentity() {
   applyDynamicNavbar();
   applyDynamicBranding();
   applyDynamicSiteIdentity();
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeSiteIdentity, { once: true });
+} else {
+  initializeSiteIdentity();
+}
 
 // 0. SLIDESHOW FUNCTIONALITY
 // ============================================
@@ -327,55 +329,30 @@ function hideSidebar() {
   }
 }
 
-function handleToggleKey(event, action) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    action();
-  }
-}
+document.addEventListener("click", (event) => {
+  if (!(event.target instanceof Element)) return;
 
-// Wire up sidebar interactions
-document.addEventListener("DOMContentLoaded", function () {
-  const navLinks = document.querySelectorAll(".sidebar a");
-  const openToggle = document.querySelector(".menu-toggle");
-  const closeToggle = document.querySelector(".sidebar-close");
-
-  navLinks.forEach((link) => {
-    link.addEventListener("click", hideSidebar);
-  });
-
-  if (openToggle) {
-    openToggle.addEventListener("click", showSidebar);
-    openToggle.addEventListener("keydown", (event) =>
-      handleToggleKey(event, showSidebar),
-    );
+  const menuToggle = event.target.closest(".menu-toggle");
+  if (menuToggle) {
+    showSidebar();
+    return;
   }
 
+  const closeToggle = event.target.closest(".sidebar-close");
   if (closeToggle) {
-    closeToggle.addEventListener("click", hideSidebar);
-    closeToggle.addEventListener("keydown", (event) =>
-      handleToggleKey(event, hideSidebar),
-    );
+    hideSidebar();
+    return;
   }
 
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      hideSidebar();
-    }
-  });
+  if (event.target.closest(".sidebar a")) {
+    hideSidebar();
+  }
+});
 
-  // Mobile Dropdown Toggle
-  const dropdowns = document.querySelectorAll(".sidebar .dropdown > a");
-  dropdowns.forEach((dropdownToggle) => {
-    dropdownToggle.addEventListener("click", function (e) {
-      // Only prevent default on mobile, allow normal navigation on desktop
-      if (window.innerWidth <= 767) {
-        e.preventDefault();
-        const parentDropdown = this.parentElement;
-        parentDropdown.classList.toggle("active");
-      }
-    });
-  });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    hideSidebar();
+  }
 });
 
 // 2. SMOOTH SCROLL BEHAVIOR
@@ -511,89 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-// 6. CONTACT FORM SUBMISSION
-// ============================================
-document.addEventListener("DOMContentLoaded", function () {
-  const contactForm = document.querySelector(".contact-form form");
-
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const name = this.querySelector('input[type="text"]').value.trim();
-      const email = this.querySelector('input[type="email"]').value.trim();
-      const phone = this.querySelector('input[type="tel"]').value.trim();
-      const message = this.querySelector("textarea").value.trim();
-
-      // Basic validation
-      if (!name || !email || !message) {
-        showNotification("Please fill in all required fields", "error");
-        return;
-      }
-
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        showNotification("Please enter a valid email address", "error");
-        return;
-      }
-
-      // Prepare form data
-      const formData = new FormData();
-      formData.append("name", name);
-      formData.append("email", email);
-      formData.append("phone", phone);
-      formData.append("message", message);
-
-      // Send to email (using mailto as fallback)
-      const mailtoLink = `mailto:mugalureagan18@gmail.com?subject=Message from ${encodeURIComponent(
-        name,
-      )}&body=${encodeURIComponent(
-        `Name: ${name}\nEmail: ${email}\nPhone: ${phone}\n\nMessage:\n${message}`,
-      )}`;
-
-      globalThis.location.href = mailtoLink;
-      showNotification(
-        "Thank you! Your message will be sent to our email.",
-        "success",
-      );
-
-      // Reset form
-      this.reset();
-    });
-  }
-});
-
-// 7. NEWSLETTER SUBSCRIPTION
-// ============================================
-document.addEventListener("DOMContentLoaded", function () {
-  const newsletterForm = document.querySelector(".newsletter form");
-
-  if (newsletterForm) {
-    newsletterForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-
-      const emailInput = this.querySelector('input[type="email"]');
-      const email = emailInput.value.trim();
-
-      // Email validation
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        showNotification("Please enter a valid email address", "error");
-        return;
-      }
-
-      // Simulate subscription
-      showNotification(
-        "Thank you for subscribing! Check your email for updates.",
-        "success",
-      );
-      this.reset();
-    });
-  }
-});
-
-// 8. NOTIFICATION SYSTEM
+// 6. NOTIFICATION SYSTEM
 // ============================================
 function showNotification(message, type = "success") {
   // Create notification element
@@ -635,7 +530,7 @@ function showNotification(message, type = "success") {
   }, 4000);
 }
 
-// 9. SCROLL-TO-TOP BUTTON
+// 7. SCROLL-TO-TOP BUTTON
 // ============================================
 document.addEventListener("DOMContentLoaded", function () {
   // Create scroll-to-top button
@@ -1044,21 +939,6 @@ document.addEventListener("DOMContentLoaded", function () {
     document.body.classList.add("dark-mode");
   }
 
-  // Save form data to local storage
-  const formInputs = document.querySelectorAll(
-    ".contact-form input, .contact-form textarea",
-  );
-  formInputs.forEach((input) => {
-    input.addEventListener("change", function () {
-      localStorage.setItem(`form_${this.name}`, this.value);
-    });
-
-    // Load saved data
-    const savedValue = localStorage.getItem(`form_${input.name}`);
-    if (savedValue) {
-      input.value = savedValue;
-    }
-  });
 });
 
 console.log("✨ Calyst Christian School - JavaScript loaded successfully!");

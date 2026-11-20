@@ -1,5 +1,6 @@
 <?php include_once 'brand.php'; ?>
 <header>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
   <section
     id="mobile-sidebar"
     class="sidebar"
@@ -49,3 +50,51 @@
     </nav>
   </div>
 </header>
+<?php
+$pageNameMap = [
+  'home.php' => 'Home',
+  'about.php' => 'About',
+  'admissions.php' => 'Admissions',
+  'fees.php' => 'Fees',
+  'gallery.php' => 'Gallery',
+  'gallery_academics.php' => 'Academic Gallery',
+  'programs.php' => 'Programs',
+  'news-events.php' => 'News & Events',
+  'staff.php' => 'Staff',
+  'contact_us.php' => 'Contact',
+  'privacy-policy.php' => 'Privacy Policy',
+  'terms-of-service.php' => 'Terms of Service',
+];
+$currentPageFile = basename(parse_url($_SERVER['REQUEST_URI'] ?? 'home.php', PHP_URL_PATH));
+if (!isset($pageNameMap[$currentPageFile]) && $currentPageFile !== 'home.php') {
+  $currentPageFile = '';
+}
+?>
+<?php if ($currentPageFile !== '' && $currentPageFile !== 'home.php'): ?>
+<nav class="public-breadcrumb" aria-label="Breadcrumb">
+  <div class="container">
+    <ol>
+      <li><a href="./home.php">Home</a></li>
+      <li aria-current="page"><?= htmlspecialchars($pageNameMap[$currentPageFile] ?? 'Page', ENT_QUOTES, 'UTF-8') ?></li>
+    </ol>
+  </div>
+</nav>
+<?php endif; ?>
+<button class="back-to-top" type="button" aria-label="Back to top" hidden>
+  <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
+</button>
+<script src="./ASSETS/js/image-fallback.js"></script>
+<script>
+  (() => {
+    const button = document.querySelector(".back-to-top");
+    if (!button) return;
+    const update = () => {
+      button.hidden = window.scrollY < 500;
+    };
+    button.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+  })();
+</script>

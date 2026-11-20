@@ -4,7 +4,10 @@
 This project includes a comprehensive JavaScript suite with three main files:
 1. **main.js** - Core functionality and interactive features
 2. **utils.js** - Utility functions and helpers
-3. **animations.css** - CSS animations and JavaScript-related styles
+3. **image-fallback.js** - Replaces unavailable image files with the temporary school-photo placeholder.
+4. CSS is maintained separately in `ASSETS/css/`:
+   - `calyst.css` - Main site styles
+   - `animations.css` - Animation and dark-mode styles
 
 ## JavaScript Files
 
@@ -191,7 +194,7 @@ Utility library with helper functions for common tasks.
 
 ---
 
-### ASSETS/js/animations.css
+### ASSETS/css/animations.css
 CSS file for animations and JavaScript-related styling.
 
 #### Animation Keyframes:
@@ -294,8 +297,8 @@ const searchHandler = CalystUtils.debounce(function(query) {
 ## Customization
 
 To customize:
-1. Edit color variables in `calyst.css` (--primary-blue, --secondary-blue, etc.)
-2. Modify animation durations in `animations.css`
+1. Edit color variables in `ASSETS/css/calyst.css` (--primary-blue, --secondary-blue, etc.)
+2. Modify animation durations in `ASSETS/css/animations.css`
 3. Update form validation rules in `main.js`
 4. Add new utility functions to `utils.js`
 

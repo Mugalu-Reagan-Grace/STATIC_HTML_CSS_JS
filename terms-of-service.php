@@ -1,153 +1,42 @@
 <?php require_once __DIR__ . '/brand.php'; ?>
 <!doctype html>
 <html lang="en">
-    <?php include_once 'components/header.php'; ?>
-          </ul>
-          <button
-            type="button"
-            class="hamburger"
-            aria-label="Open menu"
-            onclick="showSidebar()"
-            onkeydown="
-              if (event.key === 'Enter' || event.key === ' ') {
-                showSidebar();
-              }
-            "
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Terms for using the <?= SCHOOL_NAME_UPPER ?> website.">
+  <title>Terms of Service - <?= SCHOOL_NAME_UPPER ?></title>
+  <link rel="icon" type="image/x-icon" href="./ASSETS/images/favicon_io no bg/favicon.ico">
+  <link rel="stylesheet" href="./ASSETS/css/calyst.css?v=4">
+</head>
+<body>
+  <?php include_once 'components/header.php'; ?>
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Website information</span>
+        <h1>Terms of Service</h1>
+        <p>These terms describe basic expectations when using this website.</p>
       </div>
-    </header>
+    </section>
+    <section class="section policy-content">
+      <div class="container">
+        <h2>Website information</h2>
+        <p>Information on this website is provided to help families learn about the school. Programme availability, admissions details, fees, dates, and other information may change. Please confirm current details directly with the school before making decisions or payments.</p>
 
-    <!-- Main Content -->
-    <main>
-      <section class="policy-hero">
-        <div class="container">
-          <h1>Terms of Service</h1>
-          <p>Last updated: January 2026</p>
-        </div>
-      </section>
+        <h2>Appropriate use</h2>
+        <p>Use this website lawfully and do not interfere with its operation or attempt to access areas that are not public. Website content may be viewed for personal, non-commercial purposes. Do not copy or republish content in a way that misrepresents the school or violates another person’s rights.</p>
 
-      <section class="policy-content">
-        <div class="container">
-          <h2>1. Acceptance of Terms</h2>
-          <p>
-            By accessing and using the <?= SCHOOL_NAME_UPPER ?> website, you
-            accept and agree to be bound by the terms and provision of this
-            agreement. If you do not agree to abide by the above, please do not
-            use this service.
-          </p>
+        <h2>Forms and privacy</h2>
+        <p>Submitting an enquiry or admissions form does not by itself guarantee admission, a response by a particular date, or a place at the school. Information submitted through forms is handled as described in our <a href="./privacy-policy.php">Privacy Policy</a>.</p>
 
-          <h2>2. Use License</h2>
-          <p>
-            Permission is granted to temporarily download one copy of the
-            materials (information or software) on <?= SCHOOL_NAME_UPPER ?>'s
-            website for personal, non-commercial transitory viewing only. This
-            is the grant of a license, not a transfer of title, and under this
-            license you may not:
-          </p>
-          <ul>
-            <li>Modify or copy the materials</li>
-            <li>
-              Use the materials for any commercial purpose or for any public
-              display
-            </li>
-            <li>
-              Attempt to reverse engineer any software contained on the website
-            </li>
-            <li>
-              Remove any copyright or other proprietary notations from the
-              materials
-            </li>
-            <li>
-              Transfer the materials to another person or "mirror" the materials
-              on any other server
-            </li>
-            <li>Systematically extract and re-utilize data from the website</li>
-          </ul>
-
-          <h2>3. Disclaimer</h2>
-          <p>
-            The materials on <?= SCHOOL_NAME_UPPER ?>'s website are provided for
-            informational purposes only. <?= SCHOOL_NAME_UPPER ?> makes no
-            warranties, expressed or implied, and hereby disclaims and negates
-            all other warranties including, without limitation, implied
-            warranties or conditions of merchantability, fitness for a
-            particular purpose, or non-infringement of intellectual property or
-            other violation of rights.
-          </p>
-
-          <h2>4. Limitations</h2>
-          <p>
-            In no event shall <?= SCHOOL_NAME_UPPER ?> or its suppliers be liable
-            for any damages (including, without limitation, damages for loss of
-            data or profit, or due to business interruption) arising out of the
-            use or inability to use the materials on <?= SCHOOL_NAME_UPPER ?>'s
-            website, even if <?= SCHOOL_NAME_UPPER ?> or an authorized
-            representative has been notified orally or in writing of the
-            possibility of such damage.
-          </p>
-
-          <h2>5. Accuracy of Materials</h2>
-          <p>
-            The materials appearing on <?= SCHOOL_NAME_UPPER ?>'s website could
-            include technical, typographical, or photographic errors. Calyst
-            Christian School does not warrant that any of the materials on its
-            website are accurate, complete, or current. <?= SCHOOL_NAME_UPPER ?>
-            may make changes to the materials contained on its website at any
-            time without notice.
-          </p>
-
-          <h2>6. Materials on Third-Party Sites</h2>
-          <p>
-            <?= SCHOOL_NAME_UPPER ?> has not reviewed all of the sites linked to
-            its website and is not responsible for the contents of any such
-            linked site. The inclusion of any link does not imply endorsement by
-            <?= SCHOOL_NAME_UPPER ?> of the site. Use of any such linked website
-            is at the user's own risk.
-          </p>
-
-          <h2>7. Modifications</h2>
-          <p>
-            <?= SCHOOL_NAME_UPPER ?> may revise these terms of service for its
-            website at any time without notice. By using this website, you are
-            agreeing to be bound by the then current version of these terms of
-            service.
-          </p>
-
-          <h2>8. Governing Law</h2>
-          <p>
-            These terms and conditions are governed by and construed in
-            accordance with the laws of the jurisdiction in which Calyst
-            Christian School operates, and you irrevocably submit to the
-            exclusive jurisdiction of the courts in that location.
-          </p>
-
-          <h2>9. Contact Information</h2>
-          <p>
-            If you have any questions about these Terms of Service, please
-            contact us at:
-          </p>
-          <p>
-            <strong><?= SCHOOL_NAME_UPPER ?></strong><br />
-            Email: legal@calystschool.edu<br />
-            Phone: (XXX) XXX-XXXX
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer -->
-    <?php include_once 'components/footer.php'; ?>
-
-    <script src="./config.js"></script>
-  <script src="./ASSETS/js/main.js"></script>
-  </body>
+        <h2>Contact</h2>
+        <p>For questions about this website or its information, contact the school at <a href="mailto:mugalureagan18@gmail.com">mugalureagan18@gmail.com</a> or <a href="tel:+256774744394">+256 774-744-394</a>.</p>
+      </div>
+    </section>
+  </main>
+  <?php include_once 'components/footer.php'; ?>
+  <script src="./ASSETS/js/config.js?v=7"></script>
+  <script src="./ASSETS/js/main.js?v=6"></script>
+</body>
 </html>
-
-
-
-

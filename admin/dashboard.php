@@ -1,394 +1,76 @@
 <?php
-require_once __DIR__ . '/config.php';
-redirectIfNotAdmin();
+require_once __DIR__ . '/cms_helpers.php';
 
-$admin_name = $_SESSION['admin_name'] ?? 'Admin';
+$stats = [
+    ['label' => 'News & events', 'icon' => 'fa-newspaper', 'count' => (int) $conn->query('SELECT COUNT(*) AS count FROM news_events')->fetch_assoc()['count'], 'url' => './manage-news.php'],
+    ['label' => 'Active staff', 'icon' => 'fa-users', 'count' => (int) $conn->query('SELECT COUNT(*) AS count FROM staff WHERE is_active = 1')->fetch_assoc()['count'], 'url' => './manage-staff.php'],
+    ['label' => 'Gallery photos', 'icon' => 'fa-images', 'count' => (int) $conn->query('SELECT COUNT(*) AS count FROM gallery WHERE is_active = 1')->fetch_assoc()['count'], 'url' => './manage-gallery.php'],
+    ['label' => 'Unread messages', 'icon' => 'fa-envelope', 'count' => (int) $conn->query("SELECT COUNT(*) AS count FROM contact_submissions WHERE status = 'new'")->fetch_assoc()['count'], 'url' => './contact-submissions.php'],
+];
+$GLOBALS['adminUnreadCount'] = $stats[3]['count'];
+$recentNews = $conn->query('SELECT id, title, category, is_published, created_at FROM news_events ORDER BY created_at DESC LIMIT 6')->fetch_all(MYSQLI_ASSOC);
+$recentMessages = $conn->query("SELECT id, name, subject, created_at FROM contact_submissions WHERE status = 'new' ORDER BY created_at DESC LIMIT 5")->fetch_all(MYSQLI_ASSOC);
 
-// Get dashboard statistics
-$stats = [];
-$stats['news_count'] = $conn->query("SELECT COUNT(*) as count FROM news_events")->fetch_assoc()['count'];
-$stats['staff_count'] = $conn->query("SELECT COUNT(*) as count FROM staff WHERE is_active = TRUE")->fetch_assoc()['count'];
-$stats['gallery_count'] = $conn->query("SELECT COUNT(*) as count FROM gallery WHERE is_active = TRUE")->fetch_assoc()['count'];
-$stats['contacts'] = $conn->query("SELECT COUNT(*) as count FROM contact_submissions WHERE status = 'new'")->fetch_assoc()['count'];
+adminPageStart('Dashboard', 'dashboard.php', 'Your school website at a glance.');
+adminPageHeading('Good day, ' . ($_SESSION['admin_name'] ?? 'Administrator'), 'Here is what is happening across your school website.');
+adminShowFlash();
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Calyst Christian School</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f5f7fa;
-            color: #333;
-        }
-        
-        .dashboard-container {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            min-height: 100vh;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 0;
-            position: fixed;
-            width: 250px;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        
-        .sidebar-header {
-            padding: 30px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-        }
-        
-        .sidebar-header h2 {
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-        }
-        
-        .sidebar-menu li {
-            margin: 0;
-        }
-        
-        .sidebar-menu a {
-            display: block;
-            padding: 15px 20px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s;
-            border-left: 3px solid transparent;
-        }
-        
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-left-color: white;
-        }
-        
-        .sidebar-menu a i {
-            margin-right: 10px;
-            width: 20px;
-        }
-        
-        .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            padding: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .sidebar-footer a {
-            display: block;
-            text-align: center;
-            padding: 10px;
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-size: 14px;
-        }
-        
-        .sidebar-footer a:hover {
-            color: white;
-        }
-        
-        /* Main content */
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-        }
-        
-        .topbar {
-            background: white;
-            padding: 20px 30px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .topbar h1 {
-            font-size: 24px;
-            color: #333;
-        }
-        
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .user-info span {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        /* Dashboard grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .stat-card-icon {
-            font-size: 32px;
-            margin-bottom: 15px;
-        }
-        
-        .stat-card-value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        
-        .stat-card-label {
-            color: #999;
-            font-size: 14px;
-        }
-        
-        /* Management section */
-        .management-section {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-        
-        .management-section h2 {
-            margin-bottom: 20px;
-            font-size: 20px;
-            color: #333;
-        }
-        
-        .management-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .management-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .management-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .management-card i {
-            font-size: 24px;
-        }
-        
-        .management-card-text h3 {
-            font-size: 16px;
-            margin-bottom: 3px;
-        }
-        
-        .management-card-text p {
-            font-size: 12px;
-            opacity: 0.9;
-        }
-        
-        @media (max-width: 768px) {
-            .dashboard-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-            }
-            
-            .main-content {
-                margin-left: 0;
-            }
-            
-            .sidebar-menu {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-                padding: 10px;
-            }
-            
-            .sidebar-footer {
-                position: static;
-                padding: 10px;
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <nav class="sidebar">
-            <div class="sidebar-header">
-                <h2>Admin Panel</h2>
-                <p>Calyst Christian School</p>
-            </div>
-            
-            <ul class="sidebar-menu">
-                <li><a href="./dashboard.php" class="active"><i class="fas fa-th-large"></i> Dashboard</a></li>
-                <li><a href="./edit-school.php"><i class="fas fa-school"></i> School Info</a></li>
-                <li><a href="./edit-pages.php"><i class="fas fa-file-alt"></i> Pages</a></li>
-                <li><a href="./manage-news.php"><i class="fas fa-newspaper"></i> News & Events</a></li>
-                <li><a href="./manage-staff.php"><i class="fas fa-users"></i> Staff</a></li>
-                <li><a href="./manage-gallery.php"><i class="fas fa-images"></i> Gallery</a></li>
-                <li><a href="./manage-testimonials.php"><i class="fas fa-quote-left"></i> Testimonials</a></li>
-                <li><a href="./manage-fees.php"><i class="fas fa-dollar-sign"></i> Fees</a></li>
-                <li><a href="./contact-submissions.php"><i class="fas fa-envelope"></i> Messages <span style="background: red; border-radius: 50%; padding: 2px 6px; font-size: 10px; margin-left: 5px;"><?= $stats['contacts']; ?></span></a></li>
-            </ul>
-            
-            <div class="sidebar-footer">
-                <a href="./profile.php"><i class="fas fa-user"></i> Profile</a>
-                <a href="./logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </div>
-        </nav>
-        
-        <!-- Main content -->
-        <div class="main-content">
-            <div class="topbar">
-                <h1>Dashboard</h1>
-                <div class="user-info">
-                    <span>Welcome, <strong><?= htmlspecialchars($admin_name); ?></strong></span>
-                </div>
-            </div>
-            
-            <!-- Statistics -->
-            <div class="dashboard-grid">
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="color: #667eea;">📰</div>
-                    <div class="stat-card-value"><?= $stats['news_count']; ?></div>
-                    <div class="stat-card-label">News & Events</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="color: #764ba2;">👥</div>
-                    <div class="stat-card-value"><?= $stats['staff_count']; ?></div>
-                    <div class="stat-card-label">Staff Members</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="color: #f093fb;">📸</div>
-                    <div class="stat-card-value"><?= $stats['gallery_count']; ?></div>
-                    <div class="stat-card-label">Gallery Images</div>
-                </div>
-                
-                <div class="stat-card">
-                    <div class="stat-card-icon" style="color: #4facfe;">✉️</div>
-                    <div class="stat-card-value"><?= $stats['contacts']; ?></div>
-                    <div class="stat-card-label">New Messages</div>
-                </div>
-            </div>
-            
-            <!-- Management section -->
-            <div class="management-section">
-                <h2>Content Management</h2>
-                <div class="management-grid">
-                    <a href="./edit-school.php" class="management-card">
-                        <i class="fas fa-cog"></i>
-                        <div class="management-card-text">
-                            <h3>School Settings</h3>
-                            <p>Update school info</p>
-                        </div>
-                    </a>
-                    
-                    <a href="./edit-pages.php" class="management-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <i class="fas fa-file-alt"></i>
-                        <div class="management-card-text">
-                            <h3>Pages</h3>
-                            <p>Edit page content</p>
-                        </div>
-                    </a>
-                    
-                    <a href="./manage-news.php" class="management-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                        <i class="fas fa-plus-circle"></i>
-                        <div class="management-card-text">
-                            <h3>Add News</h3>
-                            <p>Create events/news</p>
-                        </div>
-                    </a>
-                    
-                    <a href="./manage-staff.php" class="management-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                        <i class="fas fa-user-plus"></i>
-                        <div class="management-card-text">
-                            <h3>Staff</h3>
-                            <p>Manage staff info</p>
-                        </div>
-                    </a>
-                    
-                    <a href="./manage-gallery.php" class="management-card" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
-                        <i class="fas fa-upload"></i>
-                        <div class="management-card-text">
-                            <h3>Gallery</h3>
-                            <p>Upload images</p>
-                        </div>
-                    </a>
-                    
-                    <a href="./contact-submissions.php" class="management-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
-                        <i class="fas fa-inbox"></i>
-                        <div class="management-card-text">
-                            <h3>Messages</h3>
-                            <p>View submissions</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+<section class="admin-grid four" aria-label="Website overview">
+    <?php foreach ($stats as $stat): ?>
+        <article class="admin-stat">
+            <span class="admin-stat-icon"><i class="fa-solid <?= adminEscape($stat['icon']); ?>"></i></span>
+            <div class="admin-stat-value"><?= number_format($stat['count']); ?></div>
+            <div class="admin-stat-label"><?= adminEscape($stat['label']); ?></div>
+            <a class="admin-stat-link" href="<?= adminEscape($stat['url']); ?>" aria-label="Open <?= adminEscape($stat['label']); ?>"></a>
+        </article>
+    <?php endforeach; ?>
+</section>
 
+<section class="admin-card" style="margin-top:22px">
+    <h2 class="admin-card-title">Quick actions</h2>
+    <div class="admin-shortcuts">
+        <a class="admin-shortcut" href="./manage-news.php#editor"><span class="admin-shortcut-icon"><i class="fa-solid fa-plus"></i></span><span><strong>Publish an update</strong><small>Share news and events</small></span></a>
+        <a class="admin-shortcut" href="./manage-gallery.php#editor"><span class="admin-shortcut-icon"><i class="fa-solid fa-cloud-arrow-up"></i></span><span><strong>Add school photos</strong><small>Upload JPG, PNG, or WebP</small></span></a>
+        <a class="admin-shortcut" href="./manage-staff.php#editor"><span class="admin-shortcut-icon"><i class="fa-solid fa-user-plus"></i></span><span><strong>Add a staff member</strong><small>Update your staff directory</small></span></a>
+        <a class="admin-shortcut" href="./contact-submissions.php"><span class="admin-shortcut-icon"><i class="fa-solid fa-inbox"></i></span><span><strong>Review messages</strong><small><?= number_format($stats[3]['count']); ?> unread submissions</small></span></a>
+        <a class="admin-shortcut" href="./edit-school.php"><span class="admin-shortcut-icon"><i class="fa-solid fa-sliders"></i></span><span><strong>School settings</strong><small>Contact details and social links</small></span></a>
+        <a class="admin-shortcut" href="./profile.php"><span class="admin-shortcut-icon"><i class="fa-solid fa-shield-halved"></i></span><span><strong>Account security</strong><small>Update your password and email</small></span></a>
+        <?php if (($_SESSION['admin_role'] ?? '') === 'admin'): ?>
+            <a class="admin-shortcut" href="./accounts.php#invite"><span class="admin-shortcut-icon"><i class="fa-solid fa-user-plus"></i></span><span><strong>Invite a CMS user</strong><small>Send a verified account invitation</small></span></a>
+        <?php endif; ?>
+    </div>
+</section>
+
+<div class="admin-grid two" style="margin-top:22px">
+    <section class="admin-card">
+        <div class="admin-toolbar"><h2 class="admin-card-title" style="margin:0">Latest news & events</h2><a class="admin-btn secondary small" href="./manage-news.php">Manage all</a></div>
+        <?php if (!$recentNews): ?>
+            <div class="admin-empty"><i class="fa-regular fa-newspaper"></i><strong>No updates yet</strong><p>Create your first school update when you are ready.</p></div>
+        <?php else: ?>
+            <div class="admin-table-wrap"><table class="admin-table">
+                <thead><tr><th>Title</th><th>Type</th><th>Status</th></tr></thead>
+                <tbody><?php foreach ($recentNews as $item): ?><tr>
+                    <td><a href="./manage-news.php?edit=<?= (int) $item['id']; ?>#editor"><strong><?= adminEscape($item['title']); ?></strong></a></td>
+                    <td><?= adminEscape(ucfirst($item['category'])); ?></td>
+                    <td><span class="admin-badge <?= $item['is_published'] ? 'success' : 'warning'; ?>"><?= $item['is_published'] ? 'Published' : 'Draft'; ?></span></td>
+                </tr><?php endforeach; ?></tbody>
+            </table></div>
+        <?php endif; ?>
+    </section>
+    <section class="admin-card">
+        <div class="admin-toolbar"><h2 class="admin-card-title" style="margin:0">New messages</h2><a class="admin-btn secondary small" href="./contact-submissions.php">View inbox</a></div>
+        <?php if (!$recentMessages): ?>
+            <div class="admin-empty"><i class="fa-regular fa-envelope-open"></i><strong>Inbox is clear</strong><p>New contact form submissions will appear here.</p></div>
+        <?php else: ?>
+            <div class="admin-table-wrap"><table class="admin-table">
+                <thead><tr><th>From</th><th>Subject</th><th>Received</th></tr></thead>
+                <tbody><?php foreach ($recentMessages as $message): ?><tr>
+                    <td><strong><?= adminEscape($message['name']); ?></strong></td>
+                    <td><?= adminEscape($message['subject'] ?: 'No subject'); ?></td>
+                    <td><?= adminEscape(date('M j', strtotime($message['created_at']))); ?></td>
+                </tr><?php endforeach; ?></tbody>
+            </table></div>
+        <?php endif; ?>
+    </section>
+</div>
+<?php adminPageEnd(); ?>

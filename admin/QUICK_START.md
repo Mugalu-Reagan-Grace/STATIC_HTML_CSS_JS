@@ -1,192 +1,45 @@
-# Admin Dashboard - Quick Reference Guide
+# Admin Dashboard - Quick Reference
 
-## 🎯 Quick Links
+## Sections
 
-| Icon | Section | File | Status |
-|------|---------|------|--------|
-| 📊 | Dashboard | `dashboard.php` | ✅ Ready |
-| ⚙️ | School Info | `edit-school.php` | ✅ Ready |
-| 📄 | Pages | `edit-pages.php` | 🔄 Coming |
-| 📰 | News & Events | `manage-news.php` | ✅ Ready |
-| 👥 | Staff | `manage-staff.php` | 🔄 Coming |
-| 📸 | Gallery | `manage-gallery.php` | 🔄 Coming |
-| 💬 | Testimonials | `manage-testimonials.php` | 🔄 Coming |
-| 💰 | Fees | `manage-fees.php` | 🔄 Coming |
-| ✉️ | Messages | `contact-submissions.php` | 🔄 Coming |
-| 👤 | Profile | `profile.php` | 🔄 Coming |
+| Section | Page | Purpose |
+|---|---|---|
+| Dashboard | `dashboard.php` | Content totals, recent updates, inbox, quick actions |
+| School settings | `edit-school.php` | Public school information, contact details, social links |
+| Pages | `edit-pages.php` | Page copy and search metadata |
+| News & events | `manage-news.php` | Announcements, event dates, publish status, images |
+| Staff | `manage-staff.php` | Staff profiles, photos, display order, visibility |
+| Gallery | `manage-gallery.php` | Photos, categories, display order, visibility |
+| Testimonials | `manage-testimonials.php` | Community quotes and publication status |
+| Fees | `manage-fees.php` | Class fees and additional notes |
+| Messages | `contact-submissions.php` | Contact form inbox and follow-up status |
+| CMS accounts | `accounts.php` | Administrator-only account invitations and pending invites |
+| Account profile | `profile.php` | Admin identity, recovery email, password |
 
----
+Management forms support adding, editing, searching, and deleting records. Published content is displayed on the matching public website page.
 
-## 🚀 Getting Started in 3 Steps
+## First-time setup
 
-### Step 1: Import Database
-```
-1. Open http://localhost/phpmyadmin
-2. Click "SQL" tab
-3. Copy contents of admin/database_setup.sql
-4. Paste and click Execute
-```
+1. Import `admin/database_setup.sql` using phpMyAdmin. For an existing database, import `admin/password_resets.sql` and `admin/account_invites.sql` if those tables are missing.
+2. Set database, SMTP, and `APP_URL` values in the project `.env` file. For the local virtual host, use `http://calyst.nsoft`; use HTTPS in production.
+3. Ensure the admin account email points to an inbox you can access.
+4. Open `http://calyst.nsoft/admin/login.php`. On a fresh database only, the seeded credentials are `admin` / `admin123`; change the initial password immediately. For an existing installation, use **Forgot your password?** and follow the emailed link.
 
-### Step 2: Login
-```
-URL: http://localhost/admin/login.php
-Username: admin
-Password: admin123
-```
+Reset links expire after 30 minutes. Check SMTP configuration if the email does not arrive.
 
-### Step 3: Start Managing
-```
-Welcome screen shows:
-- Statistics cards (news count, staff, gallery, messages)
-- Quick access management cards
-- Full sidebar navigation
-```
+Administrators can open **CMS accounts** to invite editors or other administrators. Invitations are sent by email, expire after 48 hours, and activate only after the recipient opens the link and sets a password. There is no public self-sign-up; content editors cannot invite or revoke accounts.
 
----
+## Images
 
-## 📋 What Each Section Does
+Upload JPG, PNG, or WebP files up to 5 MB. Images are stored under `uploads/cms` with generated filenames. Existing project images can be referenced with paths under `ASSETS/images/`.
 
-### School Info
-- **What**: Update basic school information
-- **Fields**: Name, motto, phone, email, address, social media
-- **Who**: Anyone with admin access
-- **Location**: `edit-school.php`
+## Common checks
 
-### News & Events
-- **What**: Create and manage news articles and event announcements
-- **Fields**: Title, description, category, date, time, publish status
-- **Who**: Admin or editor
-- **Location**: `manage-news.php`
+| Problem | Check |
+|---|---|
+| Database connection fails | Make sure MySQL is running and `.env` has the correct `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASS`, and `DB_NAME`. |
+| Password reset email is missing | Confirm the admin recovery email and SMTP settings, then request a new link. |
+| Image is missing | Check the stored image path and confirm the file exists under `ASSETS/images/` or `uploads/cms/`. |
+| Admin session expires | Sessions expire after one hour of inactivity; sign in again. |
 
-### Dashboard
-- **What**: Central hub showing all statistics and management options
-- **Shows**: Count of news, staff, gallery images, new messages
-- **Who**: Admin only
-- **Location**: `dashboard.php`
-
----
-
-## 🔐 Security Notes
-
-✅ Passwords are hashed with `password_hash()`
-✅ Sessions timeout after 1 hour of inactivity
-✅ All database queries use prepared statements
-✅ All user input is sanitized
-✅ Admin pages redirect unauthorized users to login
-
-**Change Default Password**: Go to Profile after login (when implemented)
-
----
-
-## 🎨 Database Schema Overview
-
-```
-admins (5 active admins can be created)
-├── id (primary key)
-├── username (unique)
-├── password_hash
-├── full_name
-├── role (admin or editor)
-├── is_active (yes/no)
-├── created_at
-└── last_login
-
-school_settings (key-value pairs)
-├── id
-├── setting_key (unique)
-├── setting_value
-└── updated_at
-
-news_events (unlimited articles/events)
-├── id
-├── title
-├── description
-├── event_date
-├── event_time
-├── category (news/event)
-├── featured_image
-├── is_published
-├── created_by (FK: admins.id)
-├── created_at
-└── updated_at
-
-[And 6 more tables: pages_content, staff, gallery, testimonials, fees, contact_submissions]
-```
-
----
-
-## 💻 File Locations
-
-All admin files are in the `/admin/` folder:
-
-```
-admin/
-├── login.php              ← Start here
-├── dashboard.php          ← Main hub
-├── config.php             ← Database (don't edit)
-├── database_setup.sql     ← Run once in phpMyAdmin
-├── edit-school.php        ← Edit school info
-├── manage-news.php        ← Add/edit news
-├── edit-pages.php         ← Coming soon
-├── manage-staff.php       ← Coming soon
-├── manage-gallery.php     ← Coming soon
-├── manage-testimonials.php ← Coming soon
-├── manage-fees.php        ← Coming soon
-├── contact-submissions.php ← Coming soon
-├── profile.php            ← Coming soon
-├── placeholder.php        ← Temporary coming soon page
-├── logout.php             ← Logout
-└── README.md              ← Full documentation
-```
-
----
-
-## ⚡ Pro Tips
-
-1. **Bookmark the Admin Panel**: Save `http://localhost/admin/dashboard.php` to your favorites
-2. **Session Timeout**: Activity resets the 1-hour timer (no need to stay active)
-3. **Publish Control**: Use "Publish" checkbox to draft content before making it visible
-4. **Event Details**: Only set date/time if it's an event (news items don't need it)
-5. **Social Media**: Links save as full URLs (e.g., https://facebook.com/yourpage)
-
----
-
-## 🐛 Common Issues & Solutions
-
-| Issue | Solution |
-|-------|----------|
-| Can't login | Clear browser cache, verify username/password |
-| Page not found | Make sure you're accessing `/admin/` subdirectory |
-| Settings not saving | Check browser console for errors, verify database connection |
-| Images not uploading | Feature coming soon - use external image URLs for now |
-
----
-
-## 📊 Statistics Dashboard
-
-The main dashboard shows you at a glance:
-
-- **News & Events**: Total number of published news/events
-- **Staff Members**: Active staff profiles
-- **Gallery Images**: Active images in gallery
-- **New Messages**: Unread contact form submissions
-
-Click any card to go to that management section.
-
----
-
-## 🔄 Workflow Example: Adding a News Item
-
-1. Click **"News & Events"** from dashboard or sidebar
-2. Fill in the form:
-   - Title: "Back to School 2024"
-   - Category: Select "news"
-   - Description: "School reopens on January 15th..."
-   - Date: Leave blank (news items don't require dates)
-   - Check "Publish this news/event"
-3. Click **"Save News/Event"**
-4. Verify it appears in "Recent News & Events" section below
-
----
-
-**Ready to manage your school website?** Start at `http://localhost/admin/login.php`
+For detailed setup and database notes, see [README.md](./README.md).

@@ -28,14 +28,7 @@ const SITE_CONFIG = {
   contact: {
     phone: ["+256 774-744-394", "+256 752-482-066"],
     email: "mugalureagan18@gmail.com",
-    alternateEmail: "info@calystchristianschool.com",
-    address: "P.O.BOX 124666 Kampala Uganda",
-    location: {
-      latitude: 0.3285,
-      longitude: 32.5475,
-      city: "Kampala",
-      country: "Uganda"
-    }
+    address: "P.O.BOX 124666 Kampala Uganda"
   },
 
   // Social Media
@@ -51,22 +44,7 @@ const SITE_CONFIG = {
     youtube: {
       url: "https://youtube.com/@calystchristianschools",
       handle: "calystchristianschools"
-    },
-    twitter: {
-      url: "https://twitter.com/calystschool",
-      handle: "@calystschool"
     }
-  },
-
-  // School Information
-  school: {
-    founded: 1995,
-    students: "350+",
-    teacherRatio: "1:12",
-    graduationRate: "100%",
-    collegeAcceptance: "98%",
-    vision: "Excellence in Christian Education",
-    mission: "Nurturing minds, hearts, and spirits through Christ-centered learning"
   },
 
   // Colors (Match calyst.css)
@@ -86,16 +64,17 @@ const SITE_CONFIG = {
   navigation: [
     { label: "Home", url: "./home.php" },
     {
-      label: "About",
+      label: "School",
       url: "./about.php",
       children: [
+        { label: "About", url: "./about.php" },
         { label: "Staff", url: "./staff.php" },
         { label: "Fees", url: "./fees.php" },
-        { label: "News & Events", url: "./news-events.php" }
+        { label: "Gallery", url: "./gallery.php" }
       ]
     },
-    { label: "Gallery", url: "./gallery.php" },
     { label: "Programs", url: "./programs.php" },
+    { label: "News & Events", url: "./news-events.php" },
     { label: "Contact", url: "./contact_us.php" },
     {
       label: "Admissions",
@@ -115,17 +94,6 @@ const SITE_CONFIG = {
     admissions: "./admissions.php",
     contact: "./contact_us.php",
     notFound: "./404.php"
-  },
-
-  // API Endpoints (if needed)
-  api: {
-    baseUrl: "https://api.calystchristianschool.com",
-    version: "v1",
-    endpoints: {
-      contact: "/contact",
-      newsletter: "/newsletter",
-      enrollment: "/enrollment"
-    }
   },
 
   // Analytics & Tracking
@@ -149,7 +117,7 @@ const SITE_CONFIG = {
   // Features
   features: {
     darkMode: true,
-    newsletter: true,
+    newsletter: false,
     contactForm: true,
     galleryFiltering: true,
     lazyLoading: true,
@@ -160,13 +128,11 @@ const SITE_CONFIG = {
   // Notification Messages
   messages: {
     success: {
-      contactForm: "Thank you! Your message has been sent successfully.",
-      newsletter: "Thank you for subscribing to our newsletter!",
+      contactForm: "Thank you. Your message has been received by the school office.",
       enrollment: "Your enrollment request has been received."
     },
     error: {
       contactForm: "There was an error sending your message. Please try again.",
-      newsletter: "There was an error processing your subscription.",
       network: "Network error. Please check your internet connection."
     },
     info: {
@@ -187,7 +153,6 @@ const SITE_CONFIG = {
   localStorage: {
     userPreferences: "calyst_user_prefs",
     darkMode: "calyst_dark_mode",
-    formData: "calyst_form_data",
     lastVisit: "calyst_last_visit"
   },
 

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 520" role="img" aria-labelledby="title description">
+  <title id="title">Photo coming soon</title>
+  <desc id="description">A neutral placeholder image for school photos that will be added later.</desc>
+  <rect width="800" height="520" fill="#eef3f8"/>
+  <rect x="250" y="130" width="300" height="220" rx="20" fill="#dbe6f2"/>
+  <circle cx="455" cy="195" r="28" fill="#8ca7c4"/>
+  <path d="M280 315l82-84 61 60 43-42 54 66H280z" fill="#8ca7c4"/>
+  <text x="400" y="405" fill="#49627c" font-family="Arial, sans-serif" font-size="26" text-anchor="middle">School photo coming soon</text>
+</svg>

@@ -15,6 +15,32 @@ CREATE TABLE IF NOT EXISTS admins (
     last_login TIMESTAMP NULL
 );
 
+-- One-time, expiring password reset tokens (token values are never stored directly).
+CREATE TABLE IF NOT EXISTS admin_password_resets (
+    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
+    admin_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    INDEX idx_admin_password_resets_admin_created (admin_id, created_at),
+    CONSTRAINT fk_admin_password_resets_admin
+        FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS admin_account_invites (
+    admin_id INT NOT NULL,
+    token_hash CHAR(64) NOT NULL UNIQUE,
+    invited_by INT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at DATETIME NOT NULL,
+    PRIMARY KEY (admin_id),
+    INDEX idx_admin_account_invites_expiry (expires_at),
+    CONSTRAINT fk_admin_account_invites_admin
+        FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE,
+    CONSTRAINT fk_admin_account_invites_inviter
+        FOREIGN KEY (invited_by) REFERENCES admins(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- School settings table
 CREATE TABLE IF NOT EXISTS school_settings (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -46,6 +72,7 @@ CREATE TABLE IF NOT EXISTS news_events (
     event_time TIME,
     category ENUM('news', 'event') DEFAULT 'news',
     featured_image VARCHAR(255),
+    featured_image_alt VARCHAR(255),
     is_published BOOLEAN DEFAULT TRUE,
     created_by INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -62,6 +89,7 @@ CREATE TABLE IF NOT EXISTS staff (
     phone VARCHAR(20),
     bio LONGTEXT,
     photo_url VARCHAR(255),
+    photo_alt VARCHAR(255),
     display_order INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -74,6 +102,7 @@ CREATE TABLE IF NOT EXISTS gallery (
     title VARCHAR(200) NOT NULL,
     description TEXT,
     image_url VARCHAR(255) NOT NULL,
+    image_alt VARCHAR(255),
     category VARCHAR(50),
     display_order INT DEFAULT 0,
     is_active BOOLEAN DEFAULT TRUE,
@@ -119,7 +148,7 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
 
 -- Insert default admin user (username: admin, password: admin123)
 INSERT IGNORE INTO admins (username, email, password_hash, full_name, role) VALUES
-('admin', 'admin@calystschool.com', '$2y$10$2DJHs.P8s5UqNwVJQyQ9eOqW.R.L.2Dz2zE.F.K.L.8.8.8.8.8.8', 'Administrator', 'admin');
+('admin', 'admin@calystschool.com', '$2y$10$C/yRQUn5NY6Ld1.63z5F3ei6NGY1lWWPMnY/19Ybbrm9VnyrhjYMi', 'Administrator', 'admin');
 
 -- Insert initial school settings
 INSERT IGNORE INTO school_settings (setting_key, setting_value) VALUES

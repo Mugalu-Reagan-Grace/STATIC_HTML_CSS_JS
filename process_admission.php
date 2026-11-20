@@ -218,7 +218,7 @@ try {
     send_email($parent_email, $subject, $message);
 
     // Send notification email to school
-    $school_email = "mugalureagan18@gmail.com";
+    $school_email = $school['email'] ?? "mugalureagan18@gmail.com";
     $admin_subject = "New Admission Application - " . htmlspecialchars($child_name);
     $admin_message = "
     <html>

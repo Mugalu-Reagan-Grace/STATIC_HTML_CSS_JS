@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found</title>
-    <link rel="icon" type="image/x-icon" href="./ASSETS/IMAGES/favicon_io no bg/favicon.ico">
-    <link rel="stylesheet" href="calyst.css">
-    <link rel="stylesheet" href="./ASSETS/js/animations.css">
+    <link rel="icon" type="image/x-icon" href="./ASSETS/images/favicon_io no bg/favicon.ico">
+    <link rel="stylesheet" href="./ASSETS/css/calyst.css?v=4">
+    <link rel="stylesheet" href="./ASSETS/css/animations.css">
     <style>
         .error-container {
             display: flex;

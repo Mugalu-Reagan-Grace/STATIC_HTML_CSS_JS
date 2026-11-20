@@ -1,143 +1,46 @@
 <?php require_once __DIR__ . '/brand.php'; ?>
 <!doctype html>
 <html lang="en">
-    <?php include_once 'components/header.php'; ?>
-          </ul>
-          <button
-            type="button"
-            class="hamburger"
-            aria-label="Open menu"
-            onclick="showSidebar()"
-            onkeydown="
-              if (event.key === 'Enter' || event.key === ' ') {
-                showSidebar();
-              }
-            "
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
-        </nav>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="How Calyst Christian School handles information submitted through its website and admissions forms.">
+  <title>Privacy Policy - <?= SCHOOL_NAME_UPPER ?></title>
+  <link rel="icon" type="image/x-icon" href="./ASSETS/images/favicon_io no bg/favicon.ico">
+  <link rel="stylesheet" href="./ASSETS/css/calyst.css?v=4">
+</head>
+<body>
+  <?php include_once 'components/header.php'; ?>
+  <main id="main-content">
+    <section class="page-hero">
+      <div class="container">
+        <span class="eyebrow">Your information</span>
+        <h1>Privacy Policy</h1>
       </div>
-    </header>
+    </section>
+    <section class="section policy-content">
+      <div class="container">
+        <h2>Information you provide</h2>
+        <p>When you send a general enquiry, we collect your name, email address, optional phone number, topic, and message. When you submit an admissions application, the form requests information about the child and parent or guardian, contact and residential details, and an optional birth-certificate file and additional notes.</p>
 
-    <!-- Main Content -->
-    <main>
-      <section class="policy-hero">
-        <div class="container">
-          <h1>Privacy Policy</h1>
-          <p>Last updated: January 2026</p>
-        </div>
-      </section>
+        <h2>How we use it</h2>
+        <p>We use enquiry details to respond to your question and application details to review and follow up on an admission request. Contact messages are stored in the school’s admin inbox. Admissions information is recorded for the school’s application process and may be sent to the school and applicant by email.</p>
 
-      <section class="policy-content">
-        <div class="container">
-          <h2>Introduction</h2>
-          <p>
-            <?= SCHOOL_NAME_UPPER ?> ("School," "we," "us," or "our") respects
-            your privacy and is committed to protecting your personal
-            information. This Privacy Policy explains how we collect, use,
-            disclose, and otherwise process your personal information in
-            connection with our website and school operations.
-          </p>
+        <h2>Children’s information</h2>
+        <p>Admissions information concerns children and should be provided by a parent or legal guardian. Please submit only information requested by the form. Do not include detailed medical or other sensitive information in a general contact message; contact the school first if you need guidance.</p>
 
-          <h2>Information We Collect</h2>
-          <h3>Information You Provide</h3>
-          <ul>
-            <li>Contact information (name, email address, phone number)</li>
-            <li>Inquiry and form submission data</li>
-            <li>Student and parent information for admissions</li>
-            <li>Newsletter subscription preferences</li>
-            <li>Communications and correspondence</li>
-          </ul>
+        <h2>Sharing and storage</h2>
+        <p>We do not offer newsletter subscriptions through this website. Information is available to staff who handle the relevant enquiry or application and may be processed by the services used to host the website, store its database, or deliver email. We do not sell personal information.</p>
+        <p>The website does not state a fixed retention period. Contact the school before submitting an application if you need more information about how long records are kept or how to request access, correction, or deletion.</p>
 
-          <h3>Information Collected Automatically</h3>
-          <ul>
-            <li>Browser type and version</li>
-            <li>IP address</li>
-            <li>Pages visited and time spent on site</li>
-            <li>Device information</li>
-            <li>Referral source</li>
-          </ul>
-
-          <h2>How We Use Your Information</h2>
-          <ul>
-            <li>Process admissions applications and inquiries</li>
-            <li>Respond to your communications</li>
-            <li>Provide requested information about our programs</li>
-            <li>Send newsletters and updates (with your consent)</li>
-            <li>Improve our website and services</li>
-            <li>Comply with legal obligations</li>
-          </ul>
-
-          <h2>Data Security</h2>
-          <p>
-            We implement appropriate technical and organizational measures to
-            protect your personal information against unauthorized access,
-            alteration, disclosure, or destruction. However, no method of
-            transmission over the internet is completely secure.
-          </p>
-
-          <h2>Third-Party Sharing</h2>
-          <p>
-            We do not sell, trade, or rent your personal information to third
-            parties. We may share information with trusted service providers who
-            assist us in operating our website and conducting our business,
-            subject to confidentiality agreements.
-          </p>
-
-          <h2>Cookies</h2>
-          <p>
-            Our website may use cookies to enhance your browsing experience. You
-            can control cookie preferences through your browser settings.
-          </p>
-
-          <h2>Children's Privacy</h2>
-          <p>
-            Our website is not directed to children under 13. If we become aware
-            that we have collected personal information from a child under 13,
-            we will take steps to delete such information promptly.
-          </p>
-
-          <h2>Your Rights</h2>
-          <p>You have the right to:</p>
-          <ul>
-            <li>Access your personal information</li>
-            <li>Request corrections to inaccurate information</li>
-            <li>Request deletion of your information</li>
-            <li>Opt-out of marketing communications</li>
-          </ul>
-
-          <h2>Contact Us</h2>
-          <p>
-            If you have questions about this Privacy Policy or our privacy
-            practices, please contact us at:
-          </p>
-          <p>
-            <strong><?= SCHOOL_NAME_UPPER ?></strong><br />
-            Email: info@calystschool.edu<br />
-            Phone: (XXX) XXX-XXXX
-          </p>
-
-          <h2>Policy Changes</h2>
-          <p>
-            We may update this Privacy Policy from time to time. We will notify
-            you of any significant changes by posting the updated policy on this
-            page.
-          </p>
-        </div>
-      </section>
-    </main>
-
-    <!-- Footer -->
-    <?php include_once 'components/footer.php'; ?>
-
-    <script src="./config.js"></script>
-  <script src="./ASSETS/js/main.js"></script>
-  </body>
+        <h2>Contact the school</h2>
+        <p>For a privacy question or request, contact Calyst Christian School at <a href="mailto:mugalureagan18@gmail.com">mugalureagan18@gmail.com</a> or call <a href="tel:+256774744394">+256 774-744-394</a>.</p>
+        <p>This notice describes the forms and handling currently present on the website. The school should review it against its internal retention and safeguarding procedures and applicable law.</p>
+      </div>
+    </section>
+  </main>
+  <?php include_once 'components/footer.php'; ?>
+  <script src="./ASSETS/js/config.js?v=7"></script>
+  <script src="./ASSETS/js/main.js?v=6"></script>
+</body>
 </html>
-
-
-
-

@@ -13,7 +13,7 @@
       <!-- Photo 1 -->
       <div class="photo-card">
         <img
-          src="./ASSETS/IMAGES/ccs pics/BACK 2 SCH PICS 2024/AMUG4376.jpg"
+          src="./ASSETS/images/ccs pics/BACK 2 SCH PICS 2024/AMUG4376.jpg"
           alt="Classroom Time"
           class="photo-img"
         />
@@ -28,7 +28,7 @@
       <!-- Photo 2 -->
       <div class="photo-card">
         <img
-          src="./ASSETS/IMAGES/ccs pics/BACK 2 SCH PICS 2024/AMUG4330.jpg"
+          src="./ASSETS/images/ccs pics/BACK 2 SCH PICS 2024/AMUG4330.jpg"
           alt="Staff"
           class="photo-img"
         />
@@ -44,7 +44,7 @@
     <!-- Photo 3 -->
     <div class="photo-card">
       <img
-        src="./ASSETS/IMAGES/ccs pics/Graduation pics 2024/AMUG9573.JPG"
+        src="./ASSETS/images/ccs pics/Graduation pics 2024/AMUG9573.JPG"
         alt="Class Group"
         class="photo-img"
       />

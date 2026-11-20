@@ -1,1 +1,3 @@
-<?php header('Location: ./placeholder.php'); exit;
+<?php
+$resource = 'gallery';
+require __DIR__ . '/manage-content.php';

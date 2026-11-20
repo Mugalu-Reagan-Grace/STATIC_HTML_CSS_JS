@@ -1,24 +1,50 @@
 <?php
+$projectRoot = dirname(__DIR__);
+$composerAutoload = $projectRoot . '/vendor/autoload.php';
+if (is_file($composerAutoload)) {
+    require_once $composerAutoload;
+
+    if (class_exists(\Dotenv\Dotenv::class)) {
+        \Dotenv\Dotenv::createImmutable($projectRoot)->safeLoad();
+    }
+}
+
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
-define('DB_PORT', (int) (getenv('DB_PORT') ?: 3307));
-define('DB_USER', getenv('DB_USER') ?: 'root');
-define('DB_PASS', getenv('DB_PASS') ?: '');
-define('DB_NAME', getenv('DB_NAME') ?: 'calyst_school');
+function projectEnvironment(string $name, string $default): string
+{
+    $value = $_ENV[$name] ?? $_SERVER[$name] ?? getenv($name);
+    return $value === false || $value === null ? $default : (string) $value;
+}
+
+define('DB_HOST', projectEnvironment('DB_HOST', '127.0.0.1'));
+define('DB_PORT', (int) projectEnvironment('DB_PORT', '3307'));
+define('DB_USER', projectEnvironment('DB_USER', 'root'));
+define('DB_PASS', projectEnvironment('DB_PASS', ''));
+define('DB_NAME', projectEnvironment('DB_NAME', 'calyst_school'));
 
 // SMTP / Mail settings (used by form processors and PHPMailer)
-// For Gmail: use smtp.gmail.com, port 587, enable "Less secure app access" or use App Password
-// For other providers: configure accordingly; override via environment variables
-define('SMTP_HOST', getenv('SMTP_HOST') ?: 'smtp.gmail.com');
-define('SMTP_PORT', (int) (getenv('SMTP_PORT') ?: 587));
-define('SMTP_USER', getenv('SMTP_USER') ?: 'your-email@gmail.com');
-define('SMTP_PASS', getenv('SMTP_PASS') ?: 'your-app-password');
-define('SMTP_SECURE', getenv('SMTP_SECURE') ?: 'tls'); // 'tls', 'ssl', or ''
-define('SMTP_FROM_EMAIL', getenv('SMTP_FROM_EMAIL') ?: 'mugalureagan18@gmail.com');
-define('SMTP_FROM_NAME', getenv('SMTP_FROM_NAME') ?: (defined('SCHOOL_NAME') ? SCHOOL_NAME : 'Calyst Christian School'));
+// Use provider-approved SMTP credentials (for Gmail, use an App Password).
+define('SMTP_HOST', projectEnvironment('SMTP_HOST', 'smtp.gmail.com'));
+define('SMTP_PORT', (int) projectEnvironment('SMTP_PORT', '587'));
+define('SMTP_USER', projectEnvironment('SMTP_USER', 'your-email@gmail.com'));
+define('SMTP_PASS', projectEnvironment('SMTP_PASS', 'your-app-password'));
+define('SMTP_SECURE', projectEnvironment('SMTP_SECURE', 'tls')); // 'tls', 'ssl', or ''
+define('SMTP_FROM_EMAIL', projectEnvironment('SMTP_FROM_EMAIL', 'mugalureagan18@gmail.com'));
+define('SMTP_FROM_NAME', projectEnvironment('SMTP_FROM_NAME', defined('SCHOOL_NAME') ? SCHOOL_NAME : 'Calyst Christian School'));
+$appUrl = rtrim(projectEnvironment('APP_URL', 'http://calyst.nsoft'), '/');
+$appUrlParts = parse_url($appUrl);
+if (
+    $appUrlParts === false ||
+    !isset($appUrlParts['scheme'], $appUrlParts['host']) ||
+    !in_array($appUrlParts['scheme'], ['http', 'https'], true) ||
+    array_intersect(['user', 'pass', 'query', 'fragment'], array_keys($appUrlParts))
+) {
+    throw new RuntimeException('APP_URL must be an absolute HTTP or HTTPS URL without credentials, query, or fragment.');
+}
+define('APP_URL', $appUrl);
 
 function createDatabaseConnection() {
     $ports = array_values(array_unique(array_filter([
@@ -50,8 +76,9 @@ function createDatabaseConnection() {
 
 try {
     $conn = createDatabaseConnection();
-} catch (Exception $e) {
-    die('Database error: ' . $e->getMessage());
+} catch (Throwable $e) {
+    error_log('Admin database connection failed: ' . $e->getMessage());
+    throw new RuntimeException('Database connection unavailable. Check the local database settings.', 0, $e);
 }
 
 define('ADMIN_SESSION_TIMEOUT', 3600);
@@ -86,3 +113,18 @@ function escapeSql($data) {
     return $conn->real_escape_string($data);
 }
 
+function csrfToken(): string
+{
+    if (!isset($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    return $_SESSION['csrf_token'];
+}
+
+function isValidCsrfToken($token): bool
+{
+    return is_string($token)
+        && isset($_SESSION['csrf_token'])
+        && hash_equals($_SESSION['csrf_token'], $token);
+}
